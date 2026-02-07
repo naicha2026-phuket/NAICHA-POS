@@ -1,0 +1,27 @@
+{
+  "name": "NAI CHA - ระบบขายหน้าร้าน",
+  "short_name": "NAI CHA POS",
+  "description": "ระบบ POS สำหรับร้านเครื่องดื่ม NAI CHA",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#EC407A",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/NAICHA.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/NAICHA.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "screenshots": [],
+  "prefer_related_applications": false
+}

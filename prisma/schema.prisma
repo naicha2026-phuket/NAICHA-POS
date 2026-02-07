@@ -1,0 +1,193 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Category {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String
+  description String?
+  imageUrl    String?
+  menus       Menu[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Menu {
+  id          String      @id @default(uuid()) @db.Uuid
+  name        String
+  description String?
+  price       Float
+  imageUrl    String?
+  recipe      String?
+  category    Category    @relation(fields: [categoryId], references: [id])
+  categoryId  String      @db.Uuid
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  isAvailable Boolean     @default(true)
+  orderItems  OrderItem[]
+}
+
+model Order {
+  id             String         @id @default(uuid()) @db.Uuid
+  name           String?
+  phone          String?
+  totalPrice     Float
+  status         EOrderStatus   @default(PENDING)
+  paymentMethod  EPaymentMethod @default(CASH)
+  amountReceived Float?
+  change         Float?
+  isPaid         Boolean        @default(false)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  orderItems     OrderItem[]
+  paymentSlip    String?
+  isOnline       Boolean        @default(false)
+  note           String?
+  memberId       String?        @db.Uuid
+  member         members?       @relation("MemberOrders", fields: [memberId], references: [id])
+  discounts      discount[]
+  discountAmount Float?         @default(0)
+  pointsEarned   Int            @default(0)
+  pointsUsed     Int            @default(0)
+  createdBy      String?        @db.Uuid
+  staff          Staff?         @relation("OrderStaff", fields: [createdBy], references: [id])
+  shiftId        String?        @db.Uuid
+  shift          Shift?         @relation("ShiftOrders", fields: [shiftId], references: [id])
+}
+
+model OrderItem {
+  id        String          @id @default(uuid()) @db.Uuid
+  quantity  Int
+  menu      Menu            @relation(fields: [menuId], references: [id])
+  menuId    String          @db.Uuid
+  order     Order           @relation(fields: [orderId], references: [id])
+  orderId   String          @db.Uuid
+  sweetness ESWeetNessLevel @default(NORMAL)
+  toppings  Topping[]       @relation("Topping")
+  note      String?
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+}
+
+model Topping {
+  id          String      @id @default(uuid()) @db.Uuid
+  name        String
+  description String?
+  price       Float
+  imageUrl    String?
+  orderItems  OrderItem[] @relation("Topping")
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  isAvailable Boolean     @default(true)
+}
+
+model members {
+  id        String       @id @default(uuid()) @db.Uuid
+  name      String?
+  email     String?
+  phone     String       @unique
+  createdAt DateTime     @default(now())
+  updatedAt DateTime?    @updatedAt
+  points    Int          @default(0)
+  orders    Order[]      @relation("MemberOrders")
+  pin       String?      @db.VarChar(6)
+  discounts discount[]
+  tier      EMemberTier? @default(BRONZE)
+}
+
+model discount {
+  id          String    @id @default(uuid()) @db.Uuid
+  code        String    @unique
+  description String?
+  amount      Float
+  isUsed      Boolean   @default(false)
+  expiration  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
+  orderId     String?   @db.Uuid
+  order       Order?    @relation(fields: [orderId], references: [id])
+  ownerId     String    @db.Uuid
+  member      members   @relation(fields: [ownerId], references: [id])
+  pointsUsed  Float?
+}
+
+model Staff {
+  id        String     @id @default(uuid()) @db.Uuid
+  name      String
+  phone     String     @unique
+  pin       String     @db.VarChar(6)
+  role      EStaffRole @default(CASHIER)
+  isActive  Boolean    @default(true)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  shifts    Shift[]
+  orders    Order[]    @relation("OrderStaff")
+}
+
+model Shift {
+  id           String       @id @default(uuid()) @db.Uuid
+  staffId      String       @db.Uuid
+  staff        Staff        @relation(fields: [staffId], references: [id])
+  openedAt     DateTime     @default(now())
+  closedAt     DateTime?
+  startingCash Float        @default(0)
+  endingCash   Float?
+  totalSales   Float?
+  totalOrders  Int?
+  cashSales    Float?
+  qrSales      Float?
+  status       EShiftStatus @default(OPEN)
+  note         String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  orders       Order[]      @relation("ShiftOrders")
+}
+
+enum EStaffRole {
+  ADMIN
+  CASHIER
+  MANAGER
+}
+
+enum EShiftStatus {
+  OPEN
+  CLOSED
+}
+
+enum EPaymentMethod {
+  CASH
+  BANK_TRANSFER
+}
+
+enum ESWeetNessLevel {
+  ZERO
+  TWENTY_FIVE
+  FIFTY
+  SEVENTY_FIVE
+  NORMAL
+  EXTRA
+}
+
+enum EOrderStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  CANCELLED
+}
+
+enum EMemberTier {
+  BRONZE
+  SILVER
+  GOLD
+  PLATINUM
+}
