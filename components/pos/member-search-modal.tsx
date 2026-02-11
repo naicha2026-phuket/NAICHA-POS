@@ -284,69 +284,6 @@ export function MemberSearchModal({
               </Button>
             </div>
           </div>
-        ) : showQRScanner ? (
-          // QR Scanner View
-          <div className="p-6">
-            <div className="mb-4">
-              <h3 className="text-lg font-semibold text-foreground mb-2 text-center">
-                สแกน QR Code สมาชิก
-              </h3>
-              <p className="text-sm text-muted-foreground text-center">
-                วาง QR Code บนบัตรสมาชิกให้อยู่ในกรอบ
-              </p>
-            </div>
-
-            {/* QR Scanner */}
-            <div className="w-full max-w-sm mx-auto mb-4 rounded-2xl overflow-hidden border-2 border-border">
-              <QrReader
-                onResult={handleQRScan}
-                constraints={{
-                  facingMode: "environment", // Use back camera
-                }}
-                containerStyle={{
-                  width: "100%",
-                  paddingTop: "100%",
-                  position: "relative",
-                }}
-                videoStyle={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                }}
-              />
-            </div>
-
-            {/* Scan Error Message */}
-            {scanError && (
-              <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
-                <p className="text-sm text-destructive text-center">
-                  {scanError}
-                </p>
-              </div>
-            )}
-
-            {/* Instructions */}
-            <div className="flex items-center gap-2 mb-4 p-3 bg-secondary/50 rounded-lg">
-              <Camera className="w-5 h-5 text-primary" />
-              <p className="text-sm text-muted-foreground">
-                ตรวจสอบให้แน่ใจว่าได้อนุญาตการเข้าถึงกล้อง
-              </p>
-            </div>
-
-            <Button
-              onClick={() => {
-                setShowQRScanner(false);
-                setScanError("");
-              }}
-              variant="outline"
-              className="w-full border-border bg-transparent"
-            >
-              ยกเลิก
-            </Button>
-          </div>
         ) : (
           // Search View
           <div className="p-4 space-y-4">
@@ -417,16 +354,6 @@ export function MemberSearchModal({
               />
             </div>
 
-            {/* QR Scan Button */}
-            <Button
-              onClick={() => setShowQRScanner(true)}
-              variant="outline"
-              className="w-full h-12 border-primary/30 text-primary hover:bg-primary/10 bg-transparent"
-            >
-              <QrCode className="w-5 h-5 mr-2" />
-              สแกน QR Code สมาชิก
-            </Button>
-
             {/* Member List */}
             <div className="max-h-64 overflow-y-auto space-y-2">
               {loading ? (
@@ -495,15 +422,6 @@ export function MemberSearchModal({
                         </p>
                         <p className="text-xs text-muted-foreground">แต้ม</p>
                       </div>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleViewMemberQR(member);
-                        }}
-                        className="p-2 rounded-lg hover:bg-secondary"
-                      >
-                        <QrCode className="w-5 h-5 text-muted-foreground" />
-                      </button>
                     </div>
                   </div>
                 ))

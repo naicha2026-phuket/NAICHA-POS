@@ -14,6 +14,8 @@ import { cn } from "@/lib/utils";
 import {
   CreditCard,
   Edit,
+  Eye,
+  EyeOff,
   Gift,
   History,
   Mail,
@@ -101,6 +103,7 @@ export default function MembersPage() {
   const [editingMember, setEditingMember] = useState<Member | null>(null);
   const [viewingMember, setViewingMember] = useState<Member | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [visiblePins, setVisiblePins] = useState<Set<string>>(new Set());
 
   // Form state
   const [formData, setFormData] = useState({
@@ -108,6 +111,18 @@ export default function MembersPage() {
     phone: "",
     email: "",
   });
+
+  const togglePinVisibility = (memberId: string) => {
+    setVisiblePins((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(memberId)) {
+        newSet.delete(memberId);
+      } else {
+        newSet.add(memberId);
+      }
+      return newSet;
+    });
+  };
 
   useEffect(() => {
     fetchMembers();
@@ -461,6 +476,9 @@ export default function MembersPage() {
               <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">
                 ระดับ
               </th>
+              <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">
+                PIN
+              </th>
               <th className="px-4 py-3 text-right text-sm font-medium text-muted-foreground">
                 แต้มสะสม
               </th>
@@ -532,6 +550,32 @@ export default function MembersPage() {
                     {tierLabels[member.tier]}
                   </span>
                 </td>
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-foreground font-medium">
+                      {member.pin
+                        ? visiblePins.has(member.id)
+                          ? member.pin
+                          : "•".repeat(member.pin.length)
+                        : "-"}
+                    </span>
+                    {member.pin && (
+                      <button
+                        onClick={() => togglePinVisibility(member.id)}
+                        className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-foreground"
+                        title={
+                          visiblePins.has(member.id) ? "ซ่อน PIN" : "แสดง PIN"
+                        }
+                      >
+                        {visiblePins.has(member.id) ? (
+                          <Eye className="w-4 h-4" />
+                        ) : (
+                          <EyeOff className="w-4 h-4" />
+                        )}
+                      </button>
+                    )}
+                  </div>
+                </td>
                 <td className="px-4 py-3 text-right">
                   <p className="text-lg font-bold text-primary">
                     {member.points.toLocaleString()}
@@ -545,13 +589,6 @@ export default function MembersPage() {
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center justify-center gap-1">
-                    <button
-                      onClick={() => setViewingMember(member)}
-                      className="p-2 rounded-lg hover:bg-secondary text-muted-foreground hover:text-primary"
-                      title="ดู QR Code"
-                    >
-                      <QrCode className="w-4 h-4" />
-                    </button>
                     <button
                       onClick={() => openEditModal(member)}
                       className="p-2 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground"
@@ -662,65 +699,6 @@ export default function MembersPage() {
               </Button>
             </div>
           </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* View Member QR Modal */}
-      <Dialog
-        open={!!viewingMember}
-        onOpenChange={(open) => !open && setViewingMember(null)}
-      >
-        <DialogContent className="max-w-sm bg-card border-border">
-          <DialogHeader>
-            <DialogTitle className="text-foreground text-center">
-              QR Code สมาชิก
-            </DialogTitle>
-          </DialogHeader>
-          {viewingMember && (
-            <div className="text-center py-4">
-              <div
-                className={cn(
-                  "inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium mb-4",
-                  tierColors[getTier(viewingMember.points)].bg,
-                  tierColors[getTier(viewingMember.points)].text,
-                )}
-              >
-                <Star className="w-4 h-4" />
-                {tierLabels[getTier(viewingMember.points)]}
-              </div>
-
-              <h3 className="text-xl font-bold text-foreground mb-1">
-                {viewingMember.name}
-              </h3>
-              <p className="text-muted-foreground mb-6">{`M${viewingMember.id.substring(0, 3).toUpperCase()}`}</p>
-
-              <div className="w-48 h-48 mx-auto bg-white rounded-2xl border-2 border-border flex items-center justify-center mb-6 shadow-lg">
-                <div className="text-center">
-                  <QrCode className="w-32 h-32 text-foreground mx-auto" />
-                  <p className="text-xs text-muted-foreground mt-2">{`M${viewingMember.id.substring(0, 3).toUpperCase()}`}</p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                <div className="bg-secondary/50 rounded-xl p-4">
-                  <p className="text-sm text-muted-foreground">แต้มสะสม</p>
-                  <p className="text-2xl font-bold text-primary">
-                    {viewingMember.points.toLocaleString()}
-                  </p>
-                </div>
-                <div className="bg-secondary/50 rounded-xl p-4">
-                  <p className="text-sm text-muted-foreground">ส่วนลด</p>
-                  <p className="text-2xl font-bold text-green-600">
-                    {TIER_DISCOUNTS[getTier(viewingMember.points)]}%
-                  </p>
-                </div>
-              </div>
-
-              <p className="text-xs text-muted-foreground">
-                เบอร์โทร: {viewingMember.phone}
-              </p>
-            </div>
-          )}
         </DialogContent>
       </Dialog>
     </div>

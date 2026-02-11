@@ -159,7 +159,7 @@ export function CartPanel({
                   <p className="text-sm font-medium text-sidebar-foreground">
                     เพิ่มสมาชิก
                   </p>
-                  <p className="text-xs">แตะเพื่อค้นหาหรือสแกน QR</p>
+                  <p className="text-xs">แตะเพื่อค้นหา</p>
                 </div>
               </div>
             )}
@@ -316,7 +316,7 @@ export function CartPanel({
                       <p className="text-sm font-medium text-sidebar-foreground">
                         เพิ่มสมาชิก
                       </p>
-                      <p className="text-xs">แตะเพื่อค้นหาหรือสแกน QR</p>
+                      <p className="text-xs">แตะเพื่อค้นหา</p>
                     </div>
                   </div>
                 )}
