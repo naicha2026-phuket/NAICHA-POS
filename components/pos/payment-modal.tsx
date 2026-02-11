@@ -76,19 +76,12 @@ export function PaymentModal({
   const [pointsToRedeem, setPointsToRedeem] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Calculate discounts
-  const discountPercent = selectedMember
-    ? TIER_DISCOUNTS[selectedMember.tier]
-    : 0;
-  const memberDiscount = Math.round(subtotal * (discountPercent / 100));
-  const afterMemberDiscount = subtotal - memberDiscount;
-
   // Points redemption (10 points = 25 baht, minimum 10 points required)
   const maxPointsRedeem = selectedMember
     ? Math.floor(
         Math.min(
           selectedMember.points,
-          Math.floor(afterMemberDiscount / POINTS_REDEEM_RATE),
+          Math.floor(subtotal / POINTS_REDEEM_RATE),
         ) / 10,
       ) * 10
     : 0;
@@ -96,7 +89,7 @@ export function PaymentModal({
     ? Math.floor(pointsToRedeem * POINTS_REDEEM_RATE)
     : 0;
 
-  const total = afterMemberDiscount - pointsDiscount;
+  const total = subtotal - pointsDiscount;
 
   // Calculate total glasses (quantity)
   const totalGlasses = items.reduce((sum, item) => sum + item.quantity, 0);
@@ -157,7 +150,7 @@ export function PaymentModal({
           memberId: selectedMember?.id || null,
           pointsEarned: pointsEarned,
           pointsUsed: usePoints ? pointsToRedeem : 0,
-          discountAmount: memberDiscount + pointsDiscount,
+          discountAmount: pointsDiscount,
           createdBy: employee?.id || null,
           shiftId: currentShift?.id || null,
           orderItems: items.map((item) => ({
@@ -307,17 +300,6 @@ export function PaymentModal({
                       </span>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm text-muted-foreground">ส่วนลด</p>
-                    <p
-                      className={cn(
-                        "text-lg font-bold",
-                        tierColors[selectedMember.tier].text,
-                      )}
-                    >
-                      {discountPercent}%
-                    </p>
-                  </div>
                 </div>
               </div>
             )}
@@ -330,15 +312,7 @@ export function PaymentModal({
                   ฿{subtotal.toLocaleString()}
                 </span>
               </div>
-              {selectedMember && memberDiscount > 0 && (
-                <div className="flex justify-between text-sm text-green-600">
-                  <span className="flex items-center gap-1">
-                    <Percent className="w-3 h-3" />
-                    ส่วนลดสมาชิก {discountPercent}%
-                  </span>
-                  <span>-฿{memberDiscount.toLocaleString()}</span>
-                </div>
-              )}
+
               {usePoints && pointsDiscount > 0 && (
                 <div className="flex justify-between text-sm text-primary">
                   <span className="flex items-center gap-1">
@@ -353,7 +327,7 @@ export function PaymentModal({
                   ยอดที่ต้องชำระ
                 </span>
                 <span className="text-2xl font-bold text-primary">
-                  ฿{total.toLocaleString()}
+                  ฿{subtotal.toLocaleString()}
                 </span>
               </div>
               {selectedMember && (

@@ -66,13 +66,6 @@ export function CartPanel({
   const subtotal = items.reduce((sum, item) => sum + item.totalPrice, 0);
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
-  // Calculate member discount
-  const discountPercent = selectedMember
-    ? TIER_DISCOUNTS[selectedMember.tier]
-    : 0;
-  const discountAmount = Math.round(subtotal * (discountPercent / 100));
-  const total = subtotal - discountAmount;
-
   return (
     <>
       <aside className="w-80 bg-sidebar border-l border-sidebar-border flex-col text-sidebar-foreground sm:flex hidden lg:h-[calc(100vh-100px)] sm:h-[calc(100vh-180px)]">
@@ -148,10 +141,6 @@ export function CartPanel({
                       <Star className="w-3 h-3 inline mr-1" />
                       {tierLabels[selectedMember.tier]}
                     </span>
-                    <span className="text-xs text-green-600 font-medium">
-                      <Percent className="w-3 h-3 inline" />
-                      {discountPercent}% off
-                    </span>
                   </div>
                 </div>
                 <div className="text-right">
@@ -216,22 +205,13 @@ export function CartPanel({
                 ฿{subtotal.toLocaleString()}
               </span>
             </div>
-            {selectedMember && discountAmount > 0 && (
-              <div className="flex justify-between text-sm">
-                <span className="text-green-600">
-                  ส่วนลดสมาชิก ({discountPercent}%)
-                </span>
-                <span className="text-green-600">
-                  -฿{discountAmount.toLocaleString()}
-                </span>
-              </div>
-            )}
+
             <div className="flex justify-between pt-2 border-t border-sidebar-border">
               <span className="font-medium text-sidebar-foreground">
                 ยอดสุทธิ
               </span>
               <span className="text-2xl font-bold text-primary">
-                ฿{total.toLocaleString()}
+                ฿{subtotal.toLocaleString()}
               </span>
             </div>
           </div>
@@ -318,10 +298,6 @@ export function CartPanel({
                           <Star className="w-3 h-3 inline mr-1" />
                           {tierLabels[selectedMember.tier]}
                         </span>
-                        <span className="text-xs text-green-600 font-medium">
-                          <Percent className="w-3 h-3 inline" />
-                          {discountPercent}% off
-                        </span>
                       </div>
                     </div>
                     <div className="text-right">
@@ -388,22 +364,13 @@ export function CartPanel({
                     ฿{subtotal.toLocaleString()}
                   </span>
                 </div>
-                {selectedMember && discountAmount > 0 && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-green-600">
-                      ส่วนลดสมาชิก ({discountPercent}%)
-                    </span>
-                    <span className="text-green-600">
-                      -฿{discountAmount.toLocaleString()}
-                    </span>
-                  </div>
-                )}
+
                 <div className="flex justify-between pt-2 border-t border-sidebar-border">
                   <span className="font-medium text-sidebar-foreground">
                     ยอดสุทธิ
                   </span>
                   <span className="text-2xl font-bold text-primary">
-                    ฿{total.toLocaleString()}
+                    ฿{subtotal.toLocaleString()}
                   </span>
                 </div>
               </div>
