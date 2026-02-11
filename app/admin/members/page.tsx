@@ -460,8 +460,8 @@ export default function MembersPage() {
       </div>
 
       {/* Members Table */}
-      <div className="bg-card rounded-xl border border-border overflow-hidden">
-        <table className="w-full">
+      <div className="bg-card rounded-xl border border-border overflow-x-auto -mx-3 sm:mx-0 sm:rounded-xl touch-pan-x">
+        <table className="w-full min-w-[800px]">
           <thead className="bg-secondary/50">
             <tr>
               <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">

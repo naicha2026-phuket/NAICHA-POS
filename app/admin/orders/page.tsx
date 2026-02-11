@@ -557,10 +557,34 @@ export default function AdminOrdersPage() {
             <CardTitle className="text-base">
               รายการออเดอร์ ({filteredOrders.length})
             </CardTitle>
+            {isLoading && (
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                <span className="text-sm text-muted-foreground">
+                  กำลังโหลด...
+                </span>
+              </div>
+            )}
           </div>
         </CardHeader>
         <CardContent className="p-0">
-          {filteredOrders.length === 0 ? (
+          {isLoading ? (
+            <div className="space-y-3 p-4">
+              {[...Array(3)].map((_, i) => (
+                <div
+                  key={i}
+                  className="flex items-center gap-4 p-3 bg-muted/30 rounded-lg animate-pulse"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-muted" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 bg-muted rounded w-1/4" />
+                    <div className="h-3 bg-muted rounded w-1/2" />
+                  </div>
+                  <div className="h-6 bg-muted rounded w-20" />
+                </div>
+              ))}
+            </div>
+          ) : filteredOrders.length === 0 ? (
             <div className="text-center py-12">
               <Receipt className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
               <p className="text-muted-foreground">

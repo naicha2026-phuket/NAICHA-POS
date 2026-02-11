@@ -105,19 +105,48 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const dateParam = request.nextUrl.searchParams.get("date");
+    const periodParam = request.nextUrl.searchParams.get("period") || "today";
     const statusParam = request.nextUrl.searchParams.get("status");
 
     const whereClause: any = {};
 
-    if (dateParam) {
-      const date = new Date(dateParam);
-      const startOfDay = new Date(date.setHours(0, 0, 0, 0));
-      const endOfDay = new Date(date.setHours(23, 59, 59, 999));
-      
+    // Handle period-based date filtering
+    const now = new Date();
+    let startDate: Date;
+
+    switch (periodParam.toLowerCase()) {
+      case "today":
+        startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        break;
+      case "yesterday":
+        startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+        const endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        whereClause.createdAt = {
+          gte: startDate,
+          lt: endDate,
+        };
+        break;
+      case "week":
+        startDate = new Date(now);
+        startDate.setDate(now.getDate() - 7);
+        startDate.setHours(0, 0, 0, 0);
+        break;
+      case "month":
+        startDate = new Date(now);
+        startDate.setDate(now.getDate() - 30);
+        startDate.setHours(0, 0, 0, 0);
+        break;
+      case "all":
+        // No date filtering for "all"
+        break;
+      default:
+        startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    }
+
+    // Apply date filtering for periods other than "yesterday" and "all"
+    if (periodParam.toLowerCase() !== "yesterday" && periodParam.toLowerCase() !== "all") {
       whereClause.createdAt = {
-        gte: startOfDay,
-        lte: endOfDay,
+        gte: startDate,
       };
     }
 
@@ -139,6 +168,8 @@ export async function GET(request: NextRequest) {
           },
         },
         member: true,
+        staff: true,
+        shift: true,
       },
       orderBy: {
         createdAt: "desc",
